@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/comments")
+@RequestMapping("/api/v1/comments")
 public class CommentController {
 
     private final CommentService commentService;
@@ -16,20 +16,46 @@ public class CommentController {
         this.commentService = commentService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Comment> createComment(@RequestParam(name = "user_name") String userName, @RequestBody Comment comment) {
-        commentService.createComment(userName, comment);
-        return new ResponseEntity<>(comment, HttpStatus.OK);
+    @PostMapping("/add")
+    public ResponseEntity<Comment> createComment(@RequestParam String username, @RequestBody Comment comment) {
+        commentService.createComment(username, comment);
+        return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    @GetMapping("/get/{user_name}")
-    public ResponseEntity<List<Comment>> getUserComments(@PathVariable("user_name") String userName) {
-        List<Comment> posts = commentService.getUserComments(userName);
-        if (posts.size() == 0) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<>(posts, HttpStatus.OK);
+    @GetMapping()
+    public ResponseEntity<List<Comment>> getAllComments() {
+        List<Comment> comments = commentService.getAllComments();
+        return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
+    @GetMapping("/{username}")
+    public ResponseEntity<List<Comment>> getUserComments(@PathVariable String username) {
+        List<Comment> comments = commentService.getUserComments(username);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+
+    @GetMapping("/by-post/{id}")
+    public ResponseEntity<List<Comment>> getUserCommentsByPost(@PathVariable Long id) {
+        List<Comment> comments = commentService.getAllCommentsByPost(id);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+
+    @GetMapping("/by-user/{id}")
+    public ResponseEntity<List<Comment>> getUserCommentsByUser(@PathVariable Long id) {
+        List<Comment> comments = commentService.getAllCommentsByUser(id);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> editComment(@PathVariable Long id, @RequestBody Comment commentToUpdate) {
+        commentService.editComment(id, commentToUpdate);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

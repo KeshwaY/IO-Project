@@ -1,12 +1,14 @@
 package com.pk.project_io.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pk.project_io.UserGroup.UserGroup;
 import com.pk.project_io.comment.Comment;
 import com.pk.project_io.post.Post;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "app_user")
@@ -15,7 +17,6 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(nullable = false)
     private String username;
     @Column(nullable = false)
@@ -27,11 +28,22 @@ public class User {
     @Column(nullable = false)
     private Timestamp createdDate;
 
+    @ManyToMany(mappedBy = "users")
+    @JsonIgnore
+    private Set<UserGroup> userGroup;
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Comment> comments;
+
+    public Set<UserGroup> getUserGroup() {
+        return userGroup;
+    }
+
+    public void setUserGroup(Set<UserGroup> userGroup) {
+        this.userGroup = userGroup;
+    }
 
     public Long getId() {
         return id;

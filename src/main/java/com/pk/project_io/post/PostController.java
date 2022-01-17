@@ -7,28 +7,48 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/posts")
+@RequestMapping("/api/v1/posts")
 public class PostController {
 
-    private final PostService service;
+    private final PostService postService;
 
-    public PostController(PostService service) {
-        this.service = service;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
-    @PostMapping("/create")
-    public ResponseEntity<Post> createPost(@RequestParam(name = "user_name") String userName, @RequestBody Post post) {
-        service.createPost(userName, post);
-        return new ResponseEntity<>(post, HttpStatus.OK);
+    @PostMapping("/add")
+    public ResponseEntity<Post> createPost(@RequestParam(name = "username") String username, @RequestBody Post post) {
+        postService.createPost(username, post);
+        return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
-    @GetMapping("/get/{user_name}")
-    public ResponseEntity<List<Post>> getUserPosts(@PathVariable("user_name") String userName) {
-        List<Post> posts = service.findUserPosts(userName);
-        if (posts.size() == 0) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    @GetMapping("/{username}")
+    public ResponseEntity<List<Post>> getUserPostsByUsername(@PathVariable String username) {
+        List<Post> posts = postService.findPostsByUserName(username);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
+    @GetMapping("/all-by-user/{id}")
+    public ResponseEntity<List<Post>> getAllPostsByUser(@PathVariable Long id) {
+        List<Post> posts = postService.getAllPostsByUser(id);
+        return ResponseEntity.ok(posts);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Post>> getAllPosts() {
+        List<Post> posts = postService.getAllPosts();
+        return ResponseEntity.ok(posts);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> editPost(@PathVariable Long id, @RequestBody Post postToUpdate) {
+        postService.editPost(id, postToUpdate);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.noContent().build();
+    }
 }
