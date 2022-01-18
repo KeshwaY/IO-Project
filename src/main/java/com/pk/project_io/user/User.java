@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pk.project_io.UserGroup.UserGroup;
 import com.pk.project_io.comment.Comment;
 import com.pk.project_io.post.Post;
+import com.pk.project_io.security.roles.Role;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -17,20 +18,30 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private String username;
+
     @Column(nullable = false)
     private String password;
+
     @Column(nullable = false)
     private String email;
+
     @Column(nullable = false)
     private boolean enabled;
+
     @Column(nullable = false)
     private Timestamp createdDate;
+
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<Role> roles;
 
     @ManyToMany(mappedBy = "users")
     @JsonIgnore
     private Set<UserGroup> userGroup;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
     private List<Post> posts;
 
@@ -107,5 +118,13 @@ public class User {
 
     public void setComments(List<Comment> comments) {
         this.comments = comments;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }
