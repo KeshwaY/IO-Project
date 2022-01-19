@@ -57,7 +57,7 @@ public class GroupController {
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    @PostMapping(value = "/{group_id}/remove-user")
+    @DeleteMapping(value = "/{group_id}/remove-user")
     public ResponseEntity<GroupGetDto> removeUserFromGroup(
             @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("group_id") Long groupId,

@@ -54,13 +54,13 @@ public class AdminGroupService implements AbstractService<AdminGroupGetDto, Admi
     public AdminActionResponseDto addUserToGroup(Long groupId, String username) throws GroupNotFoundException, UserNotFoundException {
         Group group = groupService.getGroupById(groupId);
         groupService.addUserToGroup(group.getOwner().getEmail(), groupId, username);
-        return new AdminActionResponseDto(String.format("User added to group id: %s!", username));
+        return new AdminActionResponseDto(String.format("User added to group id: %s!", groupId));
     }
 
     public AdminActionResponseDto removeUserFromGroup(Long groupId, String username) throws GroupNotFoundException, UserNotFoundException {
         Group group = groupService.getGroupById(groupId);
-        groupService.addUserToGroup(group.getOwner().getEmail(), groupId, username);
-        return new AdminActionResponseDto(String.format("User deleted from group id: %s!", username));
+        groupService.removeUserFromGroup(group.getOwner().getEmail(), groupId, username);
+        return new AdminActionResponseDto(String.format("User deleted from group id: %s!", groupId));
     }
 
 }

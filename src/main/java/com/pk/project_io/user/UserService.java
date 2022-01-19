@@ -138,6 +138,10 @@ public class UserService {
         return userRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
     }
 
+    public User getRawUserByUsername(String username) throws UserNotFoundException {
+        return userRepository.findByUsername(username).orElseThrow(UserNotFoundException::new);
+    }
+
     public void saveUser(User user) {
         userRepository.save(user);
     }

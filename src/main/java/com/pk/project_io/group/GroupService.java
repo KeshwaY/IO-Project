@@ -55,7 +55,7 @@ public class GroupService {
 
     public GroupGetDto addUserToGroup(String userEmail, Long groupId, String username) throws UserNotFoundException, GroupNotFoundException {
         Group group = getGroupAndCheckIfBelongsToUser(userEmail, groupId);
-        User user = userService.getRawUserByEmail(username);
+        User user = userService.getRawUserByUsername(username);
         group.getUsers().add(user);
         user.getUserGroup().add(group);
         groupRepository.save(group);
@@ -64,7 +64,7 @@ public class GroupService {
 
     public GroupGetDto removeUserFromGroup(String userEmail, Long groupId, String username) throws UserNotFoundException, GroupNotFoundException {
         Group group = getGroupAndCheckIfBelongsToUser(userEmail, groupId);
-        User user = userService.getRawUserByEmail(username);
+        User user = userService.getRawUserByUsername(username);
         group.getUsers().remove(user);
         user.getUserGroup().remove(group);
         groupRepository.save(group);
