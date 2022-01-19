@@ -1,5 +1,7 @@
 package com.pk.project_io.security.admin.group.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -20,8 +22,10 @@ public class AdminGroupGetDto {
     private LocalDateTime timeCreated;
 
     @NotBlank
+    @JsonProperty("owner_email")
     private String ownerEmail;
 
+    @JsonProperty("user_emails")
     private List<String> usersEmails;
 
     public Long getId() {

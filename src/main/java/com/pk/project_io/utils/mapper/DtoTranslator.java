@@ -4,6 +4,10 @@ import com.pk.project_io.post.Post;
 import com.pk.project_io.user.User;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Component
 @BasicDtoTranslator
 public class DtoTranslator {
@@ -21,6 +25,13 @@ public class DtoTranslator {
     @UserToUserEmail
     public String convertUseToUserEmail(User user) {
         return user.getEmail();
+    }
+
+    @UsersToUserEmails
+    public List<String> convertUsersToUserEmails(Set<User> userSet) {
+        return userSet.stream()
+                .map(User::getEmail)
+                .collect(Collectors.toUnmodifiableList());
     }
 
 }
