@@ -31,10 +31,10 @@ public class GroupController {
     }
 
     @GetMapping("/{group_name}")
-    public ResponseEntity<GroupGetDto> getUserGroupByName(
+    public ResponseEntity<List<GroupGetDto>> getUserGroupByName(
             @PathVariable("group_name") String groupName
     ) throws GroupNotFoundException {
-        GroupGetDto group = groupService.getUserGroupByName(groupName);
+        List<GroupGetDto> group = groupService.getUserGroupByName(groupName);
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 

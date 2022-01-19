@@ -1,6 +1,5 @@
 package com.pk.project_io.user;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pk.project_io.comment.Comment;
 import com.pk.project_io.post.Post;
 import com.pk.project_io.security.roles.Role;
@@ -8,7 +7,6 @@ import com.pk.project_io.group.Group;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.List;
 import java.util.Set;
 
 @Entity

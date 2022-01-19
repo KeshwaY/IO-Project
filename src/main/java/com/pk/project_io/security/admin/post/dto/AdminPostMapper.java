@@ -1,5 +1,6 @@
 package com.pk.project_io.security.admin.post.dto;
 
+import com.pk.project_io.group.dto.GroupGetDto;
 import com.pk.project_io.post.Post;
 import com.pk.project_io.post.dto.PostPutDto;
 import com.pk.project_io.security.admin.dto.AdminPutDto;

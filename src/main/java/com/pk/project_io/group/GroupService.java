@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,9 +37,11 @@ public class GroupService {
     }
 
     @Transactional(readOnly = true)
-    public GroupGetDto getUserGroupByName(String userGroupName) throws GroupNotFoundException {
-        Group group = findRawGroupByName(userGroupName);
-        return mapper.groupToGroupGetDto(group);
+    public List<GroupGetDto> getUserGroupByName(String userGroupName) {
+        List<Group> group = findRawGroupByName(userGroupName);
+        return group.stream()
+                .map(mapper::groupToGroupGetDto)
+                .collect(Collectors.toUnmodifiableList());
     }
 
     public GroupGetDto addUserGroup(String userEmail, GroupPostDto groupPostDto) throws UserNotFoundException {
@@ -106,8 +109,17 @@ public class GroupService {
         return groupRepository.findById(id).orElseThrow(GroupNotFoundException::new);
     }
 
-    public Group findRawGroupByName(String groupName) throws GroupNotFoundException {
-        return groupRepository.findUserGroupByName(groupName).orElseThrow(GroupNotFoundException::new);
+    public List<Group> findRawGroupByName(String groupName) {
+        return groupRepository.findUserGroupByName(groupName);
+    }
+
+    public List<Group> getAllRawUserGroups() {
+        return groupRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public Group getGroupById(Long id) throws GroupNotFoundException {
+        return groupRepository.findById(id).orElseThrow(GroupNotFoundException::new);
     }
 
 }
