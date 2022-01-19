@@ -1,9 +1,13 @@
 package com.pk.project_io.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pk.project_io.comment.Comment;
 import com.pk.project_io.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 public class Post {
@@ -12,13 +16,20 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
     @Column(nullable = false)
     private String description;
 
-    @JsonIgnore
+    @NotNull
+    @Column(nullable = false, name = "time_created")
+    private LocalDateTime timeCreated;
+
     @ManyToOne()
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Set<Comment> comments;
 
     public Long getId() {
         return id;
@@ -42,5 +53,21 @@ public class Post {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public LocalDateTime getTimeCreated() {
+        return timeCreated;
+    }
+
+    public void setTimeCreated(LocalDateTime timeCreated) {
+        this.timeCreated = timeCreated;
+    }
+
+    public Set<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(Set<Comment> comments) {
+        this.comments = comments;
     }
 }
