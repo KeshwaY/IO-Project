@@ -35,27 +35,36 @@ public class WebSecurityConfigurerImpl extends WebSecurityConfigurerAdapter {
         - Admin
         - User
      */
-
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .httpBasic()
-                .authenticationEntryPoint(getRestAuthenticationEntryPoint())
-                .and()
-                .csrf().disable().headers()
-                .and()
+                    .authenticationEntryPoint(getRestAuthenticationEntryPoint())
+                    .and()
+                .exceptionHandling()
+                    .accessDeniedHandler(getCustomAccessDeniedHandler())
+                    .and()
                 .authorizeRequests()
-                .mvcMatchers("api/v1/admin/**").hasRole("ADMINISTRATOR")
-                .mvcMatchers("api/v1/**").hasRole("USER")
-                .mvcMatchers(HttpMethod.PUT, "api/v1/user/add").permitAll()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .mvcMatchers("/api/v1/admin/**").hasRole("ADMINISTRATOR")
+                    .mvcMatchers(HttpMethod.POST, "/api/v1/users/signup").anonymous()
+                    .mvcMatchers("/api/v1/users/**").hasAnyRole("ADMINISTRATOR", "USER")
+                    .mvcMatchers("/api/v1/posts/**").hasAnyRole("ADMINISTRATOR", "USER")
+                    .mvcMatchers("/api/v1/comments/**").hasAnyRole("ADMINISTRATOR", "USER")
+                    .mvcMatchers("/api/v1/groups/**").hasAnyRole("ADMINISTRATOR", "USER")
+                    .mvcMatchers("/**").authenticated()
+                    .and()
+                .csrf().disable()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
     }
 
     @Bean
     public RestAuthenticationEntryPoint getRestAuthenticationEntryPoint() {
         return new RestAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler getCustomAccessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 
 }

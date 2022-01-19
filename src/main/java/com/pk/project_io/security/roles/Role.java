@@ -3,8 +3,6 @@ package com.pk.project_io.security.roles;
 import com.pk.project_io.user.User;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Set;
 
 @Entity

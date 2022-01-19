@@ -1,6 +1,5 @@
 package com.pk.project_io.security.details;
 
-import com.pk.project_io.security.roles.Role;
 import com.pk.project_io.user.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -20,7 +19,7 @@ public class UserDetailsImpl implements UserDetails {
         this.username = user.getEmail();
         this.password = user.getPassword();
         List<String> roles = user.getRoles().stream()
-                .map(Role::getName)
+                .map(role -> "ROLE_" + role.getName())
                 .collect(Collectors.toUnmodifiableList());
         this.authorityList = roles.stream()
                 .map(SimpleGrantedAuthority::new)

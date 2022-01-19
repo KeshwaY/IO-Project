@@ -1,9 +1,19 @@
 package com.pk.project_io.comment;
 
+import com.pk.project_io.comment.dto.CommentActionResponseDto;
+import com.pk.project_io.comment.dto.CommentGetDto;
+import com.pk.project_io.comment.dto.CommentPostDto;
+import com.pk.project_io.comment.dto.CommentUpdateDto;
+import com.pk.project_io.comment.exceptions.CommentNotFoundException;
+import com.pk.project_io.post.exceptions.PostNotFoundException;
+import com.pk.project_io.user.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,45 +27,48 @@ public class CommentController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Comment> createComment(@RequestParam String username, @RequestBody Comment comment) {
-        commentService.createComment(username, comment);
+    public ResponseEntity<CommentGetDto> createComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("post_id") Long postId,
+            @RequestBody @Valid CommentPostDto commentPostDto
+    ) throws PostNotFoundException, UserNotFoundException {
+        CommentGetDto comment = commentService.createComment(userDetails.getUsername(), postId, commentPostDto);
         return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
-    @GetMapping()
-    public ResponseEntity<List<Comment>> getAllComments() {
-        List<Comment> comments = commentService.getAllComments();
+    @GetMapping("/all")
+    public ResponseEntity<List<CommentGetDto>> getUserComments(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) throws UserNotFoundException {
+        List<CommentGetDto> comments = commentService.getUserComments(userDetails.getUsername());
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
-    @GetMapping("/{username}")
-    public ResponseEntity<List<Comment>> getUserComments(@PathVariable String username) {
-        List<Comment> comments = commentService.getUserComments(username);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-post/{id}")
-    public ResponseEntity<List<Comment>> getUserCommentsByPost(@PathVariable Long id) {
-        List<Comment> comments = commentService.getAllCommentsByPost(id);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
-    }
-
-    @GetMapping("/by-user/{id}")
-    public ResponseEntity<List<Comment>> getUserCommentsByUser(@PathVariable Long id) {
-        List<Comment> comments = commentService.getAllCommentsByUser(id);
-        return new ResponseEntity<>(comments, HttpStatus.OK);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> editComment(@PathVariable Long id, @RequestBody Comment commentToUpdate) {
-        commentService.editComment(id, commentToUpdate);
-        return new ResponseEntity<>(HttpStatus.OK);
+    @PutMapping("/update")
+    public ResponseEntity<CommentGetDto> editComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("comment_id") Long id,
+            @RequestBody @Valid CommentUpdateDto commentToUpdate
+    ) throws CommentNotFoundException, UserNotFoundException {
+        CommentGetDto responseDto = commentService.editComment(userDetails.getUsername(), id, commentToUpdate);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
-        commentService.deleteComment(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<CommentActionResponseDto> deleteComment(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable Long id
+    ) throws UserNotFoundException, CommentNotFoundException {
+        CommentActionResponseDto responseDto = commentService.deleteComment(userDetails.getUsername(), id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/by-post/{id}")
+    public ResponseEntity<List<CommentGetDto>> getCommentsByPost(
+            @PathVariable Long id
+    ) throws PostNotFoundException {
+        List<CommentGetDto> comments = commentService.getAllCommentsByPost(id);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
     }
 
 }

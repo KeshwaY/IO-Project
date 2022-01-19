@@ -1,8 +1,8 @@
-package com.pk.project_io.security.admin.dto;
+package com.pk.project_io.user.dto;
 
 import javax.validation.constraints.NotBlank;
 
-public class AdminSetRoleResponseDto {
+public class UpdateResponseDto {
 
     @NotBlank
     private String status;

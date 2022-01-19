@@ -1,9 +1,18 @@
 package com.pk.project_io.post;
 
+import com.pk.project_io.post.dto.PostActionResponseDto;
+import com.pk.project_io.post.dto.PostGetDto;
+import com.pk.project_io.post.dto.PostPostDto;
+import com.pk.project_io.post.dto.PostPutDto;
+import com.pk.project_io.post.exceptions.PostNotFoundException;
+import com.pk.project_io.user.exceptions.UserNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -17,38 +26,38 @@ public class PostController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Post> createPost(@RequestParam(name = "username") String username, @RequestBody Post post) {
-        postService.createPost(username, post);
-        return new ResponseEntity<>(post, HttpStatus.CREATED);
+    public ResponseEntity<PostGetDto> createPost(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody @Valid PostPostDto postDto
+    ) throws UserNotFoundException {
+        PostGetDto postGetDto = postService.createPost(userDetails.getUsername(), postDto);
+        return new ResponseEntity<>(postGetDto, HttpStatus.CREATED);
     }
 
     @GetMapping("/{username}")
-    public ResponseEntity<List<Post>> getUserPostsByUsername(@PathVariable String username) {
-        List<Post> posts = postService.findPostsByUserName(username);
+    public ResponseEntity<List<PostGetDto>> getUserPostsByUsername(
+            @PathVariable String username
+    ) {
+        List<PostGetDto> posts = postService.findPostsByUserName(username);
         return new ResponseEntity<>(posts, HttpStatus.OK);
     }
 
-    @GetMapping("/all-by-user/{id}")
-    public ResponseEntity<List<Post>> getAllPostsByUser(@PathVariable Long id) {
-        List<Post> posts = postService.getAllPostsByUser(id);
-        return ResponseEntity.ok(posts);
+    @PutMapping("/update")
+    public ResponseEntity<PostActionResponseDto> editPost(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("post_id") Long id,
+            @RequestBody PostPutDto postPutDto
+    ) throws UserNotFoundException, PostNotFoundException {
+        PostActionResponseDto responseDto = postService.editUserPost(userDetails.getUsername(), id, postPutDto);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        return ResponseEntity.ok(posts);
-    }
-
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> editPost(@PathVariable Long id, @RequestBody Post postToUpdate) {
-        postService.editPost(id, postToUpdate);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id) {
-        postService.deletePost(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/delete")
+    public ResponseEntity<PostActionResponseDto> deletePost(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam("post_id") Long id
+    ) throws UserNotFoundException, PostNotFoundException {
+        PostActionResponseDto responseDto = postService.deleteUserPost(userDetails.getUsername(), id);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }
