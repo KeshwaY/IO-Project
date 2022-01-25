@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +50,7 @@ public class GroupService {
         Group group = mapper.groupPostDtoToGroup(groupPostDto);
         group.setOwner(user);
         group.setTimeCreated(LocalDateTime.now());
+        group.setUsers(new HashSet<>());
         groupRepository.save(group);
         return mapper.groupToGroupGetDto(group);
     }
